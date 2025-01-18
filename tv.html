@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Real Time Scrabble</title>
+  <link rel="stylesheet" href="css/tv.css">
+  <script src="js/letters.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/boarddata.js"></script>
+  <script src="js/comm.js"></script>
+  <script src="js/message.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/tv.js"></script>
+  <script src="js/board.js"></script>
+
+</head>
+
+<body>
+    <div id="all">
+      <div id="title">REAL TIME SCRABBLE BATTLE
+        <div id="status" style="display: inline-block;width: 20%;text-align: right;color: azure;">- Csatlakozás -</div>
+      </div>
+      <div id="data">
+        <div id="stats" class="flexData">
+          Betű: <span id="tileNum">10</span> | Szó: <span id="wordNum">2</span> | Pont: <span id="pointNum">24</span>
+        </div>
+        <div id="names" class="flexData">
+          <table id="playerTable">
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+        <div id="lastWords" class="flexData">
+          <table id="wordsTable">
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="board"></div>
+    </div>
+</body>
+
+</html>

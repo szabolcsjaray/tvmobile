@@ -1,0 +1,1 @@
+cls && python tmserver.py

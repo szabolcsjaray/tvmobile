@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mobile client</title>
+  <link rel="stylesheet" href="css/mobilclient.css">
+  <link rel="stylesheet" href="css/scrabble.css">
+  <script src="js/letters.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/message.js"></script>
+  <script src="js/boarddata.js"></script>
+  <script src="js/comm.js"></script>
+  <script src="js/mobclient.js"></script>
+  <script src="js/scrabblecontrol.js"></script>
+  <script src="js/board.js?v=1"></script>
+</head>
+
+<body><div class="bigBox"><div id="controls" class="box">
+        <div id="header">
+          <input id="nameStr"  placeholder="név"> <button id="start">Csatlakozz</button><button id="startGame">Mehet</button>
+        </div>
+      </div>
+      <div id="tablePart" class="box"> <div class="inFlex"><div id="boardMagnified"></div></div></div>
+      <div id="allTable" class="box"> <div class="inFlex" id="allTableDiv">
+        <div id="lengthStrip"><div id="t1" class="tileNum">1</div><div id="t2" class="tileNum">2</div><div id="t3" class="tileNum">3</div><div id="t4" class="tileNum">4</div><div id="t5" class="tileNum">5</div><div id="t6" class="tileNum">6</div><div id="t7" class="tileNum">7</div></div>
+        <div id="boardStrip">
+          <div id="boardWhole"></div>
+          <img src="img/awesome_solid_arrow-up.svg" id="rightArrow" class="icon">
+          <img src="img/awesome_solid_arrow-up.svg" id="downArrow" class="icon">
+          <img src="img/icon_pause.svg" id="pause" class="icon">
+          <img src="img/x.svg" id="undo" class="icon">
+        </div>
+        </div></div>
+      <div id="letters" class="box"> <div id="lettersDiv" class="inFlex">abc</div></div>
+  </div>
+</body>
+
+</html>

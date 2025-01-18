@@ -1,0 +1,206 @@
+#boardMagnified {
+    position: absolute;
+    top:0px;
+    left:0px;
+    width: 800px;
+    height: 800px;
+    background-color: rgb(8, 88, 8);
+    overflow: hidden;
+    box-shadow: 10px 10px 5px rgb(38, 37, 37);
+    user-select: none;
+}
+
+#boardWhole {
+    position: absolute;
+    top:0%;
+    right:5%;
+    background-color: rgb(8, 88, 8);
+    overflow: hidden;
+    box-shadow: 10px 10px 5px rgb(38, 37, 37);
+    user-select: none;
+}
+
+button.tile {
+    width: 50px;
+    height: 50px;
+    background-color: rgb(73, 153, 73);
+    color: white;
+    border: 5px solid greenyellow;
+    border-bottom: 5px solid rgb(82, 128, 15);
+    border-right: 5px solid rgb(98, 142, 31);
+    border-left: 5px solid rgb(118, 181, 24);
+    font-size: 25px;
+    font-family: Arial;
+    font-weight: bold;
+    position: absolute;
+}
+
+.letterValue {
+    display: block;
+    position: absolute;
+    top: 39px;
+    left: 45px;
+    font-size: 16px;
+}
+
+button.twotimesword {
+    background-color: rgb(175, 92, 155);
+    border: 5px solid rgb(245, 139, 220);
+    border-bottom: 5px solid rgb(122, 63, 108);
+    border-right: 5px solid rgb(151, 74, 133);
+    border-left: 5px solid rgb(207, 105, 184);
+
+}
+
+.vlineshadow {
+    position: absolute;
+    background-image: linear-gradient(to right, rgba(0,0,0,0.7) , rgba(0,0,0,0.0));
+    width: 10px;
+    height: 100%;
+}
+
+.hlineshadow {
+    position: absolute;
+    background-image: linear-gradient(rgba(0,0,0,0.7) , rgba(0,0,0,0.0));
+    height: 10px;
+    width: 100%;
+}
+
+.vline {
+    position: absolute;
+    background-color: rgb(203, 241, 241);
+    width: 3px;
+    height: 100%;
+}
+.hline {
+    position: absolute;
+    background-color: rgb(203, 241, 241);
+    height: 3px;
+    width: 100%;
+}
+
+.specialTile {
+    position: absolute;
+    overflow: hidden;
+    text-align: center;
+    color: black;
+    font-size: 9px;
+    font-family: Arial, sans-seriff;
+    font-weight: bold;
+    padding-top: 5px;
+    box-sizing: border-box;
+
+}
+
+.markField {
+    position: absolute;
+    overflow: hidden;
+    color: black;
+    box-sizing: border-box;
+    z-index: 400;
+}
+
+.bookType {
+    border: 3px solid #fffb06;
+    background-color: rgba(224, 249, 48, 0.38);
+    z-index: 500;
+}
+
+.surroundType {
+    border: 3px solid #06ff6e;
+    background-color: rgba(48, 249, 78, 0.213);
+    z-index: 500;
+}
+
+.bookTypeOther {
+    border: 3px solid #ff1306;
+    background-color: rgba(249, 48, 48, 0.38);
+    z-index: 100;
+}
+
+.surroundTypeOther {
+    border: 3px solid #ff0676;
+    background-color: rgba(249, 48, 222, 0.213);
+}
+
+
+
+.inFlex {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(105, 139, 72);
+}
+
+#viewPort {
+    position:absolute;
+    top:0px;
+    left:0px;
+    border: solid 2px yellow;
+    background-color: rgba(255,255,255,0.4);
+    box-sizing: border-box;
+    user-select: none;
+}
+
+#nameStr {
+    font-family: Arial, sans-seriff;
+    font-weight: bold;
+}
+
+#nameStr:disabled {
+    background-color: black;
+    color: white;
+}
+
+.tileNum {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: black;
+    background-color: rgb(73, 153, 73);
+    border: 3px solid rgb(8, 88, 36);
+    position: absolute;
+    top: 0px;
+    z-index: 5;
+    box-sizing: border-box;
+    text-align: center;
+    padding-top: 1px;
+    padding-bottom: 0px;
+}
+
+#lengthStrip {
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+#boardStrip {
+    position: relative;
+}
+
+img.icon {
+    position: absolute;
+    height: 10%;
+    left: 5px;
+    border: 3px solid green;
+    border-radius: 25%;
+    background-color: rgb(73, 153, 73)
+}
+
+img#rightArrow {
+    top: 7.5%;
+    transform: rotate(90deg);
+}
+img#downArrow {
+    top: 32.5%;
+    transform: rotate(180deg);
+}
+img#pause {
+    top: 57.5%;
+    transform: rotate(180deg);
+}
+
+img#undo {
+    top: 82.5%;
+}

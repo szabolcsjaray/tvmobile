@@ -1,0 +1,221 @@
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(96, 123, 123);
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#all {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#data {
+    position: absolute;
+    top: 10%;
+    left: 1%;
+    width: 25%;
+    height: 80%;
+    color: white;
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.flexData {
+    border-bottom: 2px solid black;
+}
+
+#stats {
+    flex: 0 1 5%;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#names {
+    flex: 0 1 50%;
+    display: block;
+}
+
+table#playerTable {
+    width: 100%;
+    text-align: left;
+    padding: 3px;
+    color: #6dff76;
+    border-collapse: collapse; 
+}
+tr.nameRow {
+    font-weight: bold;
+}
+td.name {
+    text-align: left;
+}
+td.point {
+    text-align: right;
+}
+tr.wordRow {
+    border-bottom: 0.5px solid black;
+}
+td.word {
+    text-align: left;
+}
+
+#lastWords {
+    flex: 1 1 40%;
+    overflow: hidden;
+}
+
+table#wordsTable {
+    width: 100%;
+    text-align: left;
+    padding: 3px;
+    color: #79e5ef;
+    border-collapse: collapse;     
+}
+
+
+button.tile {
+    width: 50px;
+    height: 50px;
+    background-color: rgb(73, 153, 73);
+    color: white;
+    border: 5px solid greenyellow;
+    border-bottom: 5px solid rgb(82, 128, 15);
+    border-right: 5px solid rgb(98, 142, 31);
+    border-left: 5px solid rgb(118, 181, 24);
+    font-size: 25px;
+    font-family: Arial;
+    font-weight: bold;
+    position: absolute;
+}
+
+.letterValue {
+    display: block;
+    position: absolute;
+    top: 39px;
+    left: 45px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+button.twotimesword {
+    background-color: rgb(175, 92, 155);
+    border: 5px solid rgb(245, 139, 220);
+    border-bottom: 5px solid rgb(122, 63, 108);
+    border-right: 5px solid rgb(151, 74, 133);
+    border-left: 5px solid rgb(207, 105, 184);
+
+}
+
+#board {
+    position: absolute;
+    top:5%;
+    left:30%;
+    width: 800px;
+    height: 800px;
+    background-color: rgb(8, 88, 8);
+    overflow: hidden;
+    box-shadow: 10px 10px 5px rgb(38, 37, 37);
+}
+
+.vlineshadow {
+    position: absolute;
+    background-image: linear-gradient(to right, rgba(0,0,0,0.7) , rgba(0,0,0,0.0));
+    width: 10px;
+    height: 100%;
+}
+
+.hlineshadow {
+    position: absolute;
+    background-image: linear-gradient(rgba(0,0,0,0.7) , rgba(0,0,0,0.0));
+    height: 10px;
+    width: 100%;
+}
+
+.vline {
+    position: absolute;
+    background-color: rgb(203, 241, 241);
+    width: 3px;
+    height: 100%;
+}
+.hline {
+    position: absolute;
+    background-color: rgb(203, 241, 241);
+    height: 3px;
+    width: 100%;
+}
+
+.specialTile {
+    position: absolute;
+    overflow: hidden;
+    text-align: center;
+    color: black;
+    font-size: 9px;
+    font-family: Arial, sans-seriff;
+    font-weight: bold;
+    padding-top: 5px;
+    box-sizing: border-box;
+
+}
+
+.markField {
+    position: absolute;
+    overflow: hidden;
+    color: black;
+    box-sizing: border-box;
+    z-index: 400;
+}
+
+.bookType {
+    border: 3px solid #fffb06;
+    background-color: rgba(224, 249, 48, 0.38);
+}
+
+.surroundType {
+    border: 3px solid #06ff6e;
+    background-color: rgba(48, 249, 78, 0.213);
+}
+
+.bookTypeOther {
+    border: 3px solid #ff1306;
+    background-color: rgba(249, 48, 48, 0.38);
+}
+
+.surroundTypeOther {
+    border: 3px solid #ff0676;
+    background-color: rgba(249, 48, 222, 0.213);
+}
+
+
+#title {
+    position: absolute;
+    font-weight: bold;;
+    top: 2%;
+    left: 0%;
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(180, 219, 0);
+    text-shadow: 3px 5px 3px #173323;
+    width: 100%;
+    text-align: center;
+}
+
+#status {
+  display: inline-block;
+  width: 20%;
+  text-align: right;
+  color: azure;
+}
