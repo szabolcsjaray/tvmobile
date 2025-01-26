@@ -13,6 +13,8 @@ var board;
 const BOOK_TYPE_WORD = 1;
 const BOOK_TYPE_SURROUNDING = 2;
 
+const LETTER_WIDTH_OF_MAGNIFIED = 12.0;
+
 
 function el(id) {
     return document.getElementById(id);
@@ -28,14 +30,12 @@ function boardInit(boardName, boardDiv, boardWidth = null) {
     let wholeWidth;
 
     if (boardWidth == null) {
-
         wholeWidth = (scrHeight *0.86);
         board.style.height = wholeWidth + "px";
         board.style.top = (scrHeight *0.07) + "px";
         board.style.width = board.style.height;
-        
     } else {
-        let tileCalcWidth = scrWidth / 7.0;
+        let tileCalcWidth = scrWidth / LETTER_WIDTH_OF_MAGNIFIED;
         wholeWidth = tileCalcWidth * TABLE_FIELD_WIDTH;
         board.style.width = wholeWidth + "px";
         board.style.height = wholeWidth + "px";

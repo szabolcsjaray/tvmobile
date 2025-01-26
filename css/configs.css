@@ -1,0 +1,47 @@
+.configTable {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0px;
+    padding: 10px;
+}
+
+.configBox {
+    padding: 20px 0;
+    font-size: 20px;
+    border-bottom: 1px solid #07350b;
+}
+
+.configItemName {
+    text-align: center;
+}
+
+.configItemValue {
+    text-align: center;
+}
+
+.configSelect {
+    font-size: 15px;
+}
+
+#configDiv {
+    position: absolute;
+    left: 5%;
+    top:2%;
+    width: 90%;
+    z-index: 5000;
+    padding: 20px;
+    background-color: rgb(105, 139, 72);
+    text-align: center;
+    border: 5px solid green;
+    border-radius: 20px;
+    box-sizing: border-box;
+    font-size: 20px;
+    color: rgb(219, 249, 227);
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 10px 10px 5px rgb(38, 37, 37);
+    display: none;
+}
+
+.configsClose {
+    font-size: 20px;
+}

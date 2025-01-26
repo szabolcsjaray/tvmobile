@@ -23,21 +23,37 @@ var puttingFirstWord = false; // used at cancel word
 
 var letterPutIndex = -1;
 
+var playerConfigs;
+
+// control buttons
 const DOWN_ARROW = "downArrow";
 const RIGHT_ARROW = "rightArrow";
 const PAUSE = "pause";
 
+// control methods
+const CONTROL_ARROWS = 0;
+const CONTROL_DIRECT_FIELDS = 1;
+const CONTROL_VALUE_LIST = ["Nyilakkal", "Mezőkkel"];
+
+// player configs
+const CONFIG_CONTROL = "Szó lehelyezés";
+
+const NUMBER_OF_RECEIVED_TILES = 7.0;
+
+const INACTIVE_BUTTON_COLOR = "#3c3c3c";
+
 function scrabbleInit() {
     console.log("scrabble init.");
+    initConfigs();
     magnified = el("boardMagnified");
     magnifiedBox = el("tablePart");
     wholeBoard = el("boardWhole");
-    letterSize = (magnifiedBox.offsetWidth / 7.0);
+    letterSize = (magnifiedBox.offsetWidth / NUMBER_OF_RECEIVED_TILES);
 
     magnified.onclick = startWord;
 
-    el("rightArrow").onclick = chooseIcon;
-    el("downArrow").onclick = chooseIcon;
+    el(RIGHT_ARROW).onclick = chooseIcon;
+    el(DOWN_ARROW).onclick = chooseIcon;
     el("pause").onclick = chooseIcon;
     el("undo").onclick = cancelIcon;
 
@@ -58,6 +74,34 @@ function scrabbleInit() {
     placeRadioOptions();
 }
 
+function initConfigs() {
+    playerConfigs = new Configs(el("configDiv"));
+    playerConfigs.addConfig(CONFIG_CONTROL, CONFIGTYPE_LIST, CONTROL_ARROWS, controlChanged, false, CONTROL_VALUE_LIST);
+    playerConfigs.createConfigDivContent();
+    el("openConfigs").onclick = function () { el("configDiv").style.display = "block"; };
+}
+
+function setTileNumAndArrowsBg(color) {
+    for(let i = 1; i <= NUMBER_OF_RECEIVED_TILES; i++) {
+        let tNum = el(tileNumId(i));
+        tNum.style.backgroundColor = color;
+    }
+    el(RIGHT_ARROW).style.backgroundColor = color;
+    el(DOWN_ARROW).style.backgroundColor = color;
+}
+
+function controlChanged(newControl) {
+    if (newControl == CONTROL_ARROWS ) {
+        setTileNumAndArrowsBg(null);
+        selectedTileNum = 0;
+        selectedIcon = "";
+    } else {
+        setTileNumAndArrowsBg(INACTIVE_BUTTON_COLOR);
+        selectedTileNum = 0;
+        selectedIcon = "";
+    }
+}
+
 function getMagnifiedCoord(evt) {
     let x = evt.offsetX;
     let y = evt.offsetY;
@@ -70,7 +114,7 @@ function getMagnifiedCoord(evt) {
     return [x, y];
 }
 
-function bookWordPlace(x, y) {
+function bookWordPlaceDirection(x, y) {
     let booked = [];
     let tiles = 0;
     console.log("Booking " + x + ", " + y +", " + selectedIcon);
@@ -120,6 +164,12 @@ function addReservedFields(booked, surrounding, my) {
     wholeTableData.addReservedSurrounding(surrounding, my );
 }
 
+var fieldsBooked = [];
+var fieldWordDirection = -1;
+var fieldWordContinous = true;
+const HORIZONTAL_WORD = 1;
+const VERTICAL_WORD = 2;
+
 function startWord(evt) {
     if (game.state == GAME_FIRST_WORD || game.state == GAME_PLAYER_BOOKS_NEW) {
         let coord = getMagnifiedCoord(evt);
@@ -127,37 +177,79 @@ function startWord(evt) {
         let x = magnifiedTableData.getCoord(coord[0]);
         let y = magnifiedTableData.getCoord(coord[1]);
         if (game.state == GAME_FIRST_WORD) {
-            if (selectedTileNum < 2 ) {
-                alert("Minimum 2 hosszú szóval kezdhetsz csak!");
-                return;
-            }
-            if (selectedIcon != DOWN_ARROW && selectedIcon != RIGHT_ARROW ) {
-                alert("Válassz egy irányt!");
-                return;
-            }
-            if (selectedIcon == DOWN_ARROW) {
-                if (x != 7 || y <= 7 - selectedTileNum || y > 7) {
-                    alert("Középmezőnek a szóban kell lennie!");
+            let booked;
+            if (playerConfigs.readConfig(CONFIG_CONTROL) == CONTROL_ARROWS) {
+                if (selectedTileNum < 2 ) {
+                    alert("Minimum 2 hosszú szóval kezdhetsz csak!");
                     return;
                 }
-            }
-            if (selectedIcon == RIGHT_ARROW) {
-                if (y != 7 || x <= 7 - selectedTileNum || x > 7) {
-                    alert("Középmezőnek a szóban kell lennie!");
+                if (selectedIcon != DOWN_ARROW && selectedIcon != RIGHT_ARROW ) {
+                    alert("Válassz egy irányt!");
                     return;
                 }
-            }
+                if (selectedIcon == DOWN_ARROW) {
+                    if (x != 7 || y <= 7 - selectedTileNum || y > 7) {
+                        alert("Középmezőnek a szóban kell lennie!");
+                        return;
+                    }
+                }
+                if (selectedIcon == RIGHT_ARROW) {
+                    if (y != 7 || x <= 7 - selectedTileNum || x > 7) {
+                        alert("Középmezőnek a szóban kell lennie!");
+                        return;
+                    }
+                }
 
-            let booked = bookWordPlace(x, y);
-            let surrounding = gatherSurrounding(booked);
-            addReservedFields(booked, surrounding, true);
-            game.state = GAME_TRY_BOOKING;
-            
-            let msgData = '"booked" : ' + JSON.stringify(booked) + ', "surrounding" : '+ JSON.stringify(surrounding);
-            let bookMessage = new Message(myName, TV_NAME, MSG_BOOK_FIELDS, msgData);
-            myBooking = [booked, surrounding];
-            bookMessage.send();
-            puttingFirstWord = true;
+                booked = bookWordPlaceDirection(x, y);
+                let surrounding = gatherSurrounding(booked);
+                addReservedFields(booked, surrounding, true);
+                game.state = GAME_TRY_BOOKING;
+                
+                let msgData = '"booked" : ' + JSON.stringify(booked) + ', "surrounding" : '+ JSON.stringify(surrounding);
+                let bookMessage = new Message(myName, TV_NAME, MSG_BOOK_FIELDS, msgData);
+                myBooking = [booked, surrounding];
+                bookMessage.send();
+                puttingFirstWord = true;
+            } else {
+                console.log("Book by fields: " + x + ", " + y);
+                if ((magnifiedTableData.getTileOnField(x, y) != null)) {
+                    alert("Üres mezőt lehet csak jelölni!");
+                    return;
+                }
+                if (fieldsBooked.length == 0) {
+                    fieldsBooked.push(getCoordPair(x,y));
+                    fieldWordContinous = true;
+                } else {
+                    let actCoords = getCoordPair(x,y);
+                    let fieldInd = findArr(fieldsBooked, actCoords);
+                    if (fieldInd != -1) {
+                        fieldsBooked.splice(fieldInd, 1);
+                    } else {
+                        if (fieldsBooked.length == 1) {
+                            if (x == fieldsBooked[0][0] || y == fieldsBooked[0][1]) {
+                                if (x == fieldsBooked[0][0]) {
+                                    fieldWordDirection = VERTICAL_WORD;
+                                } else {
+                                    fieldWordDirection = HORIZONTAL_WORD;
+                                }
+                            } else {
+                                alert("Egy sorban vagy oszlopban lehet csak szót jelölni!");
+                                return;
+                            }
+                        }
+                        if (fieldWordDirection == HORIZONTAL_WORD 
+                            && y != fieldsBooked[0][1]) {
+                                alert("Egy sorban kell lenniük a betűknek!");
+                                return;
+                        }
+                        if (fieldWordDirection == VERTICAL_WORD
+                            && x != fieldsBooked[0][0]) {
+                                alert("Egy oszlopban kell lenniük a betűknek!");
+                                return;
+                        }
+                    }
+                }
+            }
         } else if (game.state == GAME_PLAYER_BOOKS_NEW) {
             if ((magnifiedTableData.getTileOnField(x, y) != null)) {
                 alert("Üres mezőn kell kezdődjön a szó!");
@@ -223,13 +315,17 @@ function updateLetters() {
 }
 
 function placeRadioOptions() {
-    for(let i = 1; i <= 7; i++) {
-        let tNum = el("t"+i);
+    for(let i = 1; i <= NUMBER_OF_RECEIVED_TILES; i++) {
+        let tNum = el(tileNumId(i));
         tNum.style.left = letterPos(i-1) + "px";
         tNum.style.width = letterSize + "px";
         tNum.innerHTML = "" + i;
         tNum.onclick = selectTileNum;
     }
+}
+
+function tileNumId(num) {
+    return "t" + num;
 }
 
 function selectTileNum(evt) {
@@ -238,7 +334,7 @@ function selectTileNum(evt) {
     }
 
     if (selectedTileNum != 0) {
-        el("t" + selectedTileNum).style.backgroundColor = null;
+        el(tileNumId(selectedTileNum)).style.backgroundColor = null;
     }
     evt.target.style.backgroundColor = "rgb(0, 228, 38)";;
     selectedTileNum = evt.target.id[1];
