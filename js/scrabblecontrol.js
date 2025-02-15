@@ -284,7 +284,7 @@ function checkBookingAndBook(x, y) {
     }
     if (playerConfigs.readConfig(CONFIG_CONTROL) == CONTROL_ARROWS) {
         if (selectedTileNum < 2 && game.state == GAME_FIRST_WORD ) {
-            alert("Minimum 2 hosszú szóval kezdhetsz csak!");
+            alert("Minimum 2 betűből álló szóval kezdhetsz csak!");
             return null;
         }
         if (selectedTileNum < 1 ) {
