@@ -45,6 +45,13 @@ const INACTIVE_BUTTON_COLOR = "#3c3c3c";
 function scrabbleInit() {
     console.log("scrabble init.");
     initConfigs();
+    setFontSizeWidthtPercentage(el("header"), 4);
+    setFontSizeWidthtPercentage(el("nameStr"), 8);
+    setFontSizeWidthtPercentage(el("start"), 18);
+    setFontSizeWidthtPercentage(el("startGameB"), 18);
+    el("startGameB").style.display = "none";
+    setFontSizeWidthtPercentage(el("openConfigs"), 18);
+
     magnified = el("boardMagnified");
     magnifiedBox = el("tablePart");
     wholeBoard = el("boardWhole");
@@ -57,8 +64,8 @@ function scrabbleInit() {
     el("pause").onclick = chooseIcon;
     el("undo").onclick = cancelIcon;
 
-    el("startGame").onclick = startGame;
-
+    el("startGameB").onclick = startGame;
+    el("startPuttingWord").onclick = startPuttingFieldLetters;
 
     el("letters").style.flexBasis = letterSize + "px";
     magnifiedTableData = boardInit("boardMagnified", el("tablePart"), "100%");
@@ -72,13 +79,15 @@ function scrabbleInit() {
     letters = ['*', 'S', 'P', 'A', 'C', 'E', 'X'];
     updateLetters();
     placeRadioOptions();
+    
 }
 
 function initConfigs() {
     playerConfigs = new Configs(el("configDiv"));
-    playerConfigs.addConfig(CONFIG_CONTROL, CONFIGTYPE_LIST, CONTROL_ARROWS, controlChanged, false, CONTROL_VALUE_LIST);
+    playerConfigs.addConfig(CONFIG_CONTROL, CONFIGTYPE_LIST, CONTROL_DIRECT_FIELDS, controlChanged, false, CONTROL_VALUE_LIST);
     playerConfigs.createConfigDivContent();
     el("openConfigs").onclick = function () { el("configDiv").style.display = "block"; };
+    controlChanged(CONTROL_DIRECT_FIELDS);
 }
 
 function setTileNumAndArrowsBg(color) {
@@ -164,105 +173,147 @@ function addReservedFields(booked, surrounding, my) {
     wholeTableData.addReservedSurrounding(surrounding, my );
 }
 
-var fieldsBooked = [];
-var fieldWordDirection = -1;
-var fieldWordContinous = true;
+const ONE_LETTER_ONLY = -1;
 const HORIZONTAL_WORD = 1;
 const VERTICAL_WORD = 2;
+var fieldsBooked = [];
+var fieldWordDirection = ONE_LETTER_ONLY;
+var fieldWordContinous = true;
 
-function startWord(evt) {
-    if (game.state == GAME_FIRST_WORD || game.state == GAME_PLAYER_BOOKS_NEW) {
-        let coord = getMagnifiedCoord(evt);
-        // console.log("" + magnifiedTableData.getCoord(coord[0]) + " - " + magnifiedTableData.getCoord(coord[1]));
-        let x = magnifiedTableData.getCoord(coord[0]);
-        let y = magnifiedTableData.getCoord(coord[1]);
-        if (game.state == GAME_FIRST_WORD) {
-            let booked;
-            if (playerConfigs.readConfig(CONFIG_CONTROL) == CONTROL_ARROWS) {
-                if (selectedTileNum < 2 ) {
-                    alert("Minimum 2 hosszú szóval kezdhetsz csak!");
-                    return;
-                }
-                if (selectedIcon != DOWN_ARROW && selectedIcon != RIGHT_ARROW ) {
-                    alert("Válassz egy irányt!");
-                    return;
-                }
-                if (selectedIcon == DOWN_ARROW) {
-                    if (x != 7 || y <= 7 - selectedTileNum || y > 7) {
-                        alert("Középmezőnek a szóban kell lennie!");
-                        return;
+function startPuttingFieldLetters() {
+    if (fieldsBooked.length < 2 && game.state == GAME_FIRST_WORD) {
+        alert("Túl rövid szó!");
+        return;
+    }
+    if (fieldsBooked.length == 0) {
+        alert("Jelöld be a mezőket, ahova a betűket rakod!");
+        return;
+    }
+    if (fieldWordDirection == ONE_LETTER_ONLY) {
+        if (magnifiedTableData.getTileOnFieldCoord(coordDown(fieldsBooked[0])) == null &&
+            magnifiedTableData.getTileOnFieldCoord(coordUp(fieldsBooked[0])) == null && 
+            magnifiedTableData.getTileOnFieldCoord(coordLeft(fieldsBooked[0])) == null &&
+            magnifiedTableData.getTileOnFieldCoord(coordRight(fieldsBooked[0])) == null) {
+                alert("A lerakott betűnek csatlakoznia kell már letett betűkhöz.");
+                return;
+        }
+    } else {
+        let centerFound = false;
+        let foundLetterInside = false;
+        if (fieldWordDirection == HORIZONTAL_WORD) {
+            fieldsBooked = fieldsBooked.sort(function(t1, t2){return t1[0] - t2[0]});
+            console.log(fieldsBooked);
+            for(let x = fieldsBooked[0][0], i = 0; i < fieldsBooked.length;) {
+                x++;
+                if (i == fieldsBooked.length - 1 || fieldsBooked[i+1][0] == x) {
+                    if (fieldsBooked[i][0] == 7 && fieldsBooked[i][1] == 7) {
+                        centerFound = true;
                     }
-                }
-                if (selectedIcon == RIGHT_ARROW) {
-                    if (y != 7 || x <= 7 - selectedTileNum || x > 7) {
-                        alert("Középmezőnek a szóban kell lennie!");
-                        return;
-                    }
-                }
-
-                booked = bookWordPlaceDirection(x, y);
-                let surrounding = gatherSurrounding(booked);
-                addReservedFields(booked, surrounding, true);
-                game.state = GAME_TRY_BOOKING;
-                
-                let msgData = '"booked" : ' + JSON.stringify(booked) + ', "surrounding" : '+ JSON.stringify(surrounding);
-                let bookMessage = new Message(myName, TV_NAME, MSG_BOOK_FIELDS, msgData);
-                myBooking = [booked, surrounding];
-                bookMessage.send();
-                puttingFirstWord = true;
-            } else {
-                console.log("Book by fields: " + x + ", " + y);
-                if ((magnifiedTableData.getTileOnField(x, y) != null)) {
-                    alert("Üres mezőt lehet csak jelölni!");
-                    return;
-                }
-                if (fieldsBooked.length == 0) {
-                    fieldsBooked.push(getCoordPair(x,y));
-                    fieldWordContinous = true;
+                    i++;
                 } else {
-                    let actCoords = getCoordPair(x,y);
-                    let fieldInd = findArr(fieldsBooked, actCoords);
-                    if (fieldInd != -1) {
-                        fieldsBooked.splice(fieldInd, 1);
+                    if (magnifiedTableData.getTileOnField(x, fieldsBooked[0][1]) == null) {
+                        alert("Egybefüggő szónak kell kijönnie!");
+                        return;
                     } else {
-                        if (fieldsBooked.length == 1) {
-                            if (x == fieldsBooked[0][0] || y == fieldsBooked[0][1]) {
-                                if (x == fieldsBooked[0][0]) {
-                                    fieldWordDirection = VERTICAL_WORD;
-                                } else {
-                                    fieldWordDirection = HORIZONTAL_WORD;
-                                }
-                            } else {
-                                alert("Egy sorban vagy oszlopban lehet csak szót jelölni!");
-                                return;
-                            }
-                        }
-                        if (fieldWordDirection == HORIZONTAL_WORD 
-                            && y != fieldsBooked[0][1]) {
-                                alert("Egy sorban kell lenniük a betűknek!");
-                                return;
-                        }
-                        if (fieldWordDirection == VERTICAL_WORD
-                            && x != fieldsBooked[0][0]) {
-                                alert("Egy oszlopban kell lenniük a betűknek!");
-                                return;
-                        }
+                        foundLetterInside = true;
                     }
                 }
             }
-        } else if (game.state == GAME_PLAYER_BOOKS_NEW) {
-            if ((magnifiedTableData.getTileOnField(x, y) != null)) {
-                alert("Üres mezőn kell kezdődjön a szó!");
+            if (!foundLetterInside &&
+                magnifiedTableData.getTileOnFieldCoord(coordLeft(fieldsBooked[0])) == null &&
+                magnifiedTableData.getTileOnFieldCoord(coordRight(fieldsBooked[fieldsBooked.length-1])) == null &&
+                game.state != GAME_FIRST_WORD) {
+                    alert("Csatlakoznod kell legalább egy lerakott betűhöz!");
+                    return;
+            }
+        } else {
+            fieldsBooked = fieldsBooked.sort(function(t1, t2){return t1[1] - t2[1]});
+            console.log(fieldsBooked);
+            for(let y = fieldsBooked[0][1], i = 0; i < fieldsBooked.length;) {
+                y++;
+                if (i == fieldsBooked.length - 1 || fieldsBooked[i+1][1] == y) {
+                    if (fieldsBooked[i][0] == 7 && fieldsBooked[i][1] == 7) {
+                        centerFound = true;
+                    }
+                    i++;
+                } else {
+                    if (magnifiedTableData.getTileOnField(fieldsBooked[0][0], y) == null) {
+                        alert("Egybefüggő szónak kell kijönnie!");
+                        return;
+                    } else {
+                        foundLetterInside = true;
+                    }
+                }
+            }
+            if (!foundLetterInside &&
+                magnifiedTableData.getTileOnFieldCoord(coordUp(fieldsBooked[0])) == null &&
+                magnifiedTableData.getTileOnFieldCoord(coordDown(fieldsBooked[fieldsBooked.length-1])) == null &&
+                game.state != GAME_FIRST_WORD) {
+                    alert("Csatlakoznod kell legalább egy lerakott betűhöz!");
+                    return;
+            }
+        }
+        if (game.state == GAME_FIRST_WORD) {
+            if (!centerFound) {
+                alert("A középső mezőnek az első szóban kell lennie!");
                 return;
             }
-            if (selectedTileNum < 1 ) {
-                alert("Válassz lerakott betű számot!");
-                return;
+        }
+    }
+    el("startPuttingWord").style.display = "none";
+    let surrounding = gatherSurrounding(fieldsBooked);
+    playerBookFields(fieldsBooked, surrounding);
+}
+
+function playerBookFields(booked, surrounding) {
+    game.state = GAME_TRY_BOOKING;
+                
+    let msgData = '"booked" : ' + JSON.stringify(booked) + ', "surrounding" : '+ JSON.stringify(surrounding);
+    let bookMessage = new Message(myName, TV_NAME, MSG_BOOK_FIELDS, msgData);
+    myBooking = [booked, surrounding];
+    fieldsBooked = [];
+    fieldWordDirection = ONE_LETTER_ONLY;
+    bookMessage.send();
+}
+
+function checkBookingAndBook(x, y) {
+    let booked;
+    if ((magnifiedTableData.getTileOnField(x, y) != null)) {
+        alert("Nem üres mező!");
+        return null;
+    }
+    if (playerConfigs.readConfig(CONFIG_CONTROL) == CONTROL_ARROWS) {
+        if (selectedTileNum < 2 && game.state == GAME_FIRST_WORD ) {
+            alert("Minimum 2 hosszú szóval kezdhetsz csak!");
+            return null;
+        }
+        if (selectedTileNum < 1 ) {
+            alert("Válassz lerakott betű számot!");
+            return;
+        }
+        if (selectedIcon != DOWN_ARROW && selectedIcon != RIGHT_ARROW ) {
+            alert("Válassz egy irányt!");
+            return null;
+        }
+        if (game.state == GAME_FIRST_WORD) {
+            if (selectedIcon == DOWN_ARROW) {
+                if (x != 7 || y <= 7 - selectedTileNum || y > 7) {
+                    alert("Középmezőnek a szóban kell lennie!");
+                    return null;
+                }
             }
-            if (selectedIcon != DOWN_ARROW && selectedIcon != RIGHT_ARROW ) {
-                alert("Válassz egy irányt!");
-                return;
+            if (selectedIcon == RIGHT_ARROW) {
+                if (y != 7 || x <= 7 - selectedTileNum || x > 7) {
+                    alert("Középmezőnek a szóban kell lennie!");
+                    return null;
+                }
             }
+        }
+
+        if (game.state == GAME_FIRST_WORD) {
+            booked = bookWordPlaceDirection(x, y);
+        }
+        if (game.state == GAME_PLAYER_BOOKS_NEW) {
             let dx = (selectedIcon == RIGHT_ARROW ? 1 : 0);
             let dy = (selectedIcon == DOWN_ARROW ? 1 : 0);
             let tileI = 0;
@@ -284,21 +335,85 @@ function startWord(evt) {
             foundLetter |= (magnifiedTableData.getTileOnField(checkX, checkY) != null);
             if (!foundLetter) {
                 alert("Nem csatlakozik már letett szóhoz!");
-                return;
+                return null;
             }
             if (tileI != selectedTileNum) {
                 alert("Nincs elég hely.");
-                return;
+                return null;
             }
+        }
 
-            let surrounding = gatherSurrounding(booked);
-            addReservedFields(booked, surrounding, true);
-            game.state = GAME_TRY_BOOKING;
-            
-            let msgData = '"booked" : ' + JSON.stringify(booked) + ', "surrounding" : '+ JSON.stringify(surrounding);
-            let bookMessage = new Message(myName, TV_NAME, MSG_BOOK_FIELDS, msgData);
-            myBooking = [booked, surrounding];
-            bookMessage.send();
+        
+        let surrounding = gatherSurrounding(booked);
+        addReservedFields(booked, surrounding, true);
+        playerBookFields(booked, surrounding);
+        if (game.state == GAME_FIRST_WORD) {
+            puttingFirstWord = true;
+        }
+    } else {
+        console.log("Book by fields: " + x + ", " + y);
+        if ((magnifiedTableData.getTileOnField(x, y) != null)) {
+            alert("Üres mezőt lehet csak jelölni!");
+            return null;
+        }
+        if (fieldsBooked.length == 0) {
+            fieldsBooked.push(getCoordPair(x,y));
+            fieldWordContinous = true;
+            el("startPuttingWord").style.display = "block";
+
+            setFontSizeHeightPercentage(el("startPuttingWord"), 80);
+        } else {
+            let actCoords = getCoordPair(x,y);
+            let fieldInd = findArr(fieldsBooked, actCoords);
+            if (fieldInd != -1) {
+                fieldsBooked.splice(fieldInd, 1);
+                if (fieldsBooked.length <= 1) {
+                    fieldWordDirection = ONE_LETTER_ONLY;
+                }
+            } else {
+                if (fieldsBooked.length == 1) {
+                    if (x == fieldsBooked[0][0] || y == fieldsBooked[0][1]) {
+                        if (x == fieldsBooked[0][0]) {
+                            fieldWordDirection = VERTICAL_WORD;
+                        } else {
+                            fieldWordDirection = HORIZONTAL_WORD;
+                        }
+                    } else {
+                        alert("Egy sorban vagy oszlopban lehet csak szót jelölni!");
+                        return null;
+                    }
+                }
+                if (fieldWordDirection == HORIZONTAL_WORD 
+                    && y != fieldsBooked[0][1]) {
+                        alert("Egy sorban kell lenniük a betűknek!");
+                        return null;
+                }
+                if (fieldWordDirection == VERTICAL_WORD
+                    && x != fieldsBooked[0][0]) {
+                        alert("Egy oszlopban kell lenniük a betűknek!");
+                        return null;
+                }
+                fieldsBooked.push(getCoordPair(x,y));
+            }
+        }
+        magnifiedTableData.removeMyBookings();
+        magnifiedTableData.removeMySurroundings();
+        let mySurroundings = gatherSurrounding(fieldsBooked);
+        addReservedFields(fieldsBooked, mySurroundings, true);
+        return fieldsBooked;
+    }
+}
+
+function startWord(evt) {
+    if (game.state == GAME_FIRST_WORD || game.state == GAME_PLAYER_BOOKS_NEW) {
+        let coord = getMagnifiedCoord(evt);
+        // console.log("" + magnifiedTableData.getCoord(coord[0]) + " - " + magnifiedTableData.getCoord(coord[1]));
+        let x = magnifiedTableData.getCoord(coord[0]);
+        let y = magnifiedTableData.getCoord(coord[1]);
+
+        let checkResult = checkBookingAndBook(x, y);
+        if (checkResult == null) {
+            return;
         }
     }
 }
@@ -307,8 +422,22 @@ function ackSent(ackMsg) {
     console.log("Acked sent data." + ackMsg);
 }
 
+function removeTilesFromLettersDiv() {
+    let ld = el("lettersDiv");
+    let toRemove = [];
+    for (var i = 0; i < ld.childNodes.length; i++) {
+        if (ld.childNodes[i].className == "tile") {
+            toRemove.push(ld.childNodes[i]);
+        }        
+    }
+
+    for(let j = 0; j < toRemove.length; j++) {
+        ld.removeChild(toRemove[j]);
+    }
+}
+
 function updateLetters() {
-    el("lettersDiv").innerHTML = "abc";
+    removeTilesFromLettersDiv();
     for(let i = 0; i < letters.length; i++) {
         putLetterToAnywhere(letters[ i ], letterPos(i), 0, el("lettersDiv"), letterSize, letterSize, "l"+i );
     }
@@ -588,7 +717,7 @@ function playerPutLetter(letterDiv) {
     letterDiv.remove();
     removeLetter(letterDiv.letter);
     letterPutIndex++;
-    if (letterPutIndex >= selectedTileNum) {
+    if (letterPutIndex >= myBooking[0].length) {
         let sendWordTilesMsg = new Message( myName, TV_NAME, MSG_PLAYER_SEND_WORD_TILES, 
             '"tiles":' + JSON.stringify(tilesPut));
         sendWordTilesMsg.send();
@@ -632,6 +761,7 @@ function processReceivedData(data) {
     }
     console.log("process received message start for " + dataObj.msg);
     if (dataObj.msg == MSG_INIT_LETTERS) {
+        el("startGameB").style.display = "none";
         letters = dataObj.letters;
         updateLetters();
         console.log("Game starting.\nLetters received: " + dataObj.letters);

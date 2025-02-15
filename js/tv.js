@@ -21,7 +21,7 @@ function init() {
     startTv();
     updateStats(0,0,0);
     generateLetters();
-}
+ }
 
 function generateLetters() {
 
@@ -63,6 +63,15 @@ function addNewPlayer(player) {
 
 function startTv() {
     readResource("cgi-bin\\getport.py?name="+encodeURIComponent(myName), processPorts);
+    readResource("cgi-bin\\getaddress.py", processAddress);
+}
+
+function processAddress(address) {
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width : 300,
+        height : 300
+    });
+    qrcode.makeCode("http://"+address.trim()+"/scrabble.html");
 }
 
 function bookingFieldsSuccess(booked, surrounding) {
@@ -330,6 +339,7 @@ function getLetters(num, player) {
 }
 
 function startTheGame() {
+    el("qrCodeBox").style.display = "none";
     for(let i = 0; i < players.length; i++) {
         let lettersStr = getLetters(MAX_LETTER_NUM, players[i]);
         let msgData = '"letters": ['+ lettersStr+']';

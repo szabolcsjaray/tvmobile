@@ -219,6 +219,10 @@ class BoardData {
         return null;
     }
 
+    getTileOnFieldCoord(coord) {
+        return this.getTileOnField(coord[0], coord[1]);
+    }
+
     getTileIndexOnField(x, y) {
         let i = 0;
         while (i < this.lettersOnBoard.length) {

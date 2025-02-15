@@ -219,3 +219,26 @@ button.twotimesword {
   text-align: right;
   color: azure;
 }
+
+#qrCodeBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 30%;
+    left: 25%;
+    width: 50%;
+    height: 40%;
+    background-color: rgb(214, 223, 214);
+    box-shadow: 20px 20px 5px rgb(38, 37, 37);
+    border-radius: 40px;
+    border: solid rgb(55, 90, 55) 10px;
+    box-sizing: border-box;
+}
+
+#qrcode {
+    background-color: #6dff76;
+    width: 300px;
+    height: 300px;
+}
+

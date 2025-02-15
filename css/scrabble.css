@@ -147,11 +147,25 @@ button.twotimesword {
 #nameStr {
     font-family: Arial, sans-seriff;
     font-weight: bold;
+    width: 40%;
 }
 
 #nameStr:disabled {
     background-color: black;
     color: white;
+}
+
+button#start {
+    width: 15%;
+}
+
+button#startGameB {
+    width: 15%;
+    
+}
+
+button#openConfigs {
+    width: 15%;
 }
 
 .tileNum {
@@ -203,4 +217,24 @@ img#pause {
 
 img#undo {
     top: 82.5%;
+}
+#startPuttingWord {
+    display: none;
+    position: absolute;
+    top: -5px;
+    left: 2%;
+    width: 96%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: rgb(15, 55, 1);
+    background-color: #f3fff594;
+    border: solid rgb(108, 114, 114) 4px;
+    z-index: 6000;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 10px 10px 5px rgb(38, 37, 37);
+    height: 90%;
+    font-family: Arial;
 }

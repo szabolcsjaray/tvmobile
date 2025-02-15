@@ -22,7 +22,7 @@ function startPage() {
     myName = el("nameStr").value;
     el("nameStr").disabled = true;
     el("start").style.display = "none";
-    el("startGame").style.display = "inline-block";
+    el("startGameB").style.display = "inline-block";
     //el("inputStr").disabled = false;
     //el("send").disabled = false;
     readResource("cgi-bin\\getport.py?name="+encodeURIComponent(myName), processPorts);
