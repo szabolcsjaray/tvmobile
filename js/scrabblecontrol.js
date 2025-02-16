@@ -85,9 +85,9 @@ function scrabbleInit() {
 function initConfigs() {
     playerConfigs = new Configs(el("configDiv"));
     playerConfigs.addConfig(CONFIG_CONTROL, CONFIGTYPE_LIST, CONTROL_DIRECT_FIELDS, controlChanged, false, CONTROL_VALUE_LIST);
+    controlChanged(CONTROL_DIRECT_FIELDS);
     playerConfigs.createConfigDivContent();
     el("openConfigs").onclick = function () { el("configDiv").style.display = "block"; };
-    controlChanged(CONTROL_DIRECT_FIELDS);
 }
 
 function setTileNumAndArrowsBg(color) {
